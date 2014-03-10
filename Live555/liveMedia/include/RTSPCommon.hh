@@ -55,7 +55,7 @@ Boolean parseRTSPRequestString(char const *reqStr, unsigned reqStrSize,
 
 Boolean parseRangeParam(char const* paramStr, double& rangeStart, double& rangeEnd, char*& absStartTime, char*& absEndTime);
 Boolean parseRangeHeader(char const* buf, double& rangeStart, double& rangeEnd, char*& absStartTime, char*& absEndTime);
-
+// 返回时间字符串(不需要释放缓冲区)
 char const* dateHeader(); // A "Date:" header that can be used in a RTSP (or HTTP) response 
 
 void ignoreSigPipeOnSocket(int socketNum);

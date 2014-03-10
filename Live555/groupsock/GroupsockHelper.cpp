@@ -141,8 +141,7 @@ int setupDatagramSocket(UsageEnvironment& env, Port port) {
     MAKE_SOCKADDR_IN(name, addr, port.num());
     if (bind(newSocket, (struct sockaddr*)&name, sizeof name) != 0) {
       char tmpBuffer[100];
-      sprintf(tmpBuffer, "bind() error (port number: %d): ",
-	      ntohs(port.num()));
+      sprintf(tmpBuffer, "bind() error (port number: %d): ", ntohs(port.num()));
       socketErr(env, tmpBuffer);
       closeSocket(newSocket);
       return -1;
@@ -242,8 +241,7 @@ int setupStreamSocket(UsageEnvironment& env,
     MAKE_SOCKADDR_IN(name, ReceivingInterfaceAddr, port.num());
     if (bind(newSocket, (struct sockaddr*)&name, sizeof name) != 0) {
       char tmpBuffer[100];
-      sprintf(tmpBuffer, "bind() error (port number: %d): ",
-	      ntohs(port.num()));
+      sprintf(tmpBuffer, "bind() error (port number: %d): ", ntohs(port.num()));
       socketErr(env, tmpBuffer);
       closeSocket(newSocket);
       return -1;
@@ -269,8 +267,7 @@ int readSocket(UsageEnvironment& env,
 	       struct sockaddr_in& fromAddress) {
   SOCKLEN_T addressSize = sizeof fromAddress;
   int bytesRead = recvfrom(socket, (char*)buffer, bufferSize, 0,
-			   (struct sockaddr*)&fromAddress,
-			   &addressSize);
+			   (struct sockaddr*)&fromAddress, &addressSize);
   if (bytesRead < 0) {
     //##### HACK to work around bugs in Linux and Windows:
     int err = env.getErrno();
@@ -336,12 +333,11 @@ Boolean writeSocket(UsageEnvironment& env,
 	return False;
 }
 
-static unsigned getBufferSize(UsageEnvironment& env, int bufOptName,
-			      int socket) {
+static unsigned getBufferSize(UsageEnvironment& env, int bufOptName, int socket) 
+{
   unsigned curSize;
   SOCKLEN_T sizeSize = sizeof curSize;
-  if (getsockopt(socket, SOL_SOCKET, bufOptName,
-		 (char*)&curSize, &sizeSize) < 0) {
+  if (getsockopt(socket, SOL_SOCKET, bufOptName,(char*)&curSize, &sizeSize) < 0) {
     socketErr(env, "getBufferSize() error: ");
     return 0;
   }
@@ -425,8 +421,7 @@ Boolean socketJoinGroup(UsageEnvironment& env, int socket,
   return True;
 }
 
-Boolean socketLeaveGroup(UsageEnvironment&, int socket,
-			 netAddressBits groupAddress) {
+Boolean socketLeaveGroup(UsageEnvironment&, int socket, netAddressBits groupAddress) {
   if (!IsMulticastAddress(groupAddress)) return True; // ignore this case
 
   struct ip_mreq imr;

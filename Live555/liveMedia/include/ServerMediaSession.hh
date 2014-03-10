@@ -38,7 +38,10 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 class ServerMediaSubsession; // forward
-
+/**
+媒体描述类，主要属性有描述SDP和引用计数.
+并包含ServerMediaSubsession的列表
+*/
 class ServerMediaSession: public Medium {
 public:
   static ServerMediaSession* createNew(UsageEnvironment& env,
@@ -100,7 +103,9 @@ private:
   Boolean fDeleteWhenUnreferenced;
 };
 
-
+/**
+ServerMediaSubsession枚举器，附着在ServerMediaSession上的.
+*/
 class ServerMediaSubsessionIterator {
 public:
   ServerMediaSubsessionIterator(ServerMediaSession& session);
@@ -114,7 +119,9 @@ private:
   ServerMediaSubsession* fNextPtr;
 };
 
-
+/**
+负责实际拖动和开启停止处理.
+*/
 class ServerMediaSubsession: public Medium {
 public:
   virtual ~ServerMediaSubsession();
@@ -154,6 +161,7 @@ public:
      // "absEnd" should be either NULL (for no end time), or a string of the same form as "absStart".
      // These strings may be modified in-place, or can be reassigned to a newly-allocated value (after delete[]ing the original).
   virtual void setStreamScale(unsigned clientSessionId, void* streamToken, float scale);
+  // 这应该是实际的文件源
   virtual FramedSource* getStreamSource(void* streamToken);
   virtual void deleteStream(unsigned clientSessionId, void*& streamToken);
 
@@ -162,7 +170,7 @@ public:
     // returns 0 for an unbounded session (the default)
     // returns > 0 for a bounded session
   virtual void getAbsoluteTimeRange(char*& absStartTime, char*& absEndTime) const;
-    // Subclasses can reimplement this iff they support seeking by 'absolute' time.
+    // Subclasses can reimplement this if they support seeking by 'absolute' time.
 
   // The following may be called by (e.g.) SIP servers, for which the
   // address and port number fields in SDP descriptions need to be non-zero:

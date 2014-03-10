@@ -27,8 +27,7 @@ static const int MILLION = 1000000;
 
 int Timeval::operator>=(const Timeval& arg2) const {
   return seconds() > arg2.seconds()
-    || (seconds() == arg2.seconds()
-	&& useconds() >= arg2.useconds());
+    || (seconds() == arg2.seconds() && useconds() >= arg2.useconds());
 }
 
 void Timeval::operator+=(const DelayInterval& arg2) {
@@ -221,9 +220,7 @@ void DelayQueue::synchronize() {
 
 EventTime TimeNow() {
   struct timeval tvNow;
-
   gettimeofday(&tvNow, NULL);
-
   return EventTime(tvNow.tv_sec, tvNow.tv_usec);
 }
 

@@ -50,7 +50,7 @@ public:
     // "maxSchedulerGranularity" (default value: 10 ms) specifies the maximum time that we wait (in "select()") before
     // returning to the event loop to handle non-socket or non-timer-based events, such as 'triggered events'.
     // You can change this is you wish (but only if you know what you're doing!), or set it to 0, to specify no such maximum time.
-    // (You should set it to 0 only if you know that you will not be using 'event triggers'.)
+    // (You should set it to 0 only if you know that you will not be using 'event triggers'.) 如果不使用事件可设为0(微秒)
   virtual ~BasicTaskScheduler();
 
 protected:

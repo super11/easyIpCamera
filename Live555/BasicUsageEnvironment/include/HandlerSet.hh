@@ -25,15 +25,21 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 ////////// HandlerSet (etc.) definition //////////
-
+/*
+套接口描述类，在构造和析构时处理好链表的维护
+*/
 class HandlerDescriptor {
   HandlerDescriptor(HandlerDescriptor* nextHandler);
   virtual ~HandlerDescriptor();
 
 public:
+  /// 套接字句柄
   int socketNum;
+  /// 关心事件
   int conditionSet;
+  /// 回调函数
   TaskScheduler::BackgroundHandlerProc* handlerProc;
+  /// 回调参数
   void* clientData;
 
 private:
@@ -44,13 +50,16 @@ private:
   HandlerDescriptor* fPrevHandler;
 };
 
+/// 容器类
 class HandlerSet {
 public:
   HandlerSet();
   virtual ~HandlerSet();
-
+  /// 根据socketNum,增加或重设HandlerDescriptor
   void assignHandler(int socketNum, int conditionSet, TaskScheduler::BackgroundHandlerProc* handlerProc, void* clientData);
+  /// 删除socketNum对应的HandlerDescriptor
   void clearHandler(int socketNum);
+  /// 重设，对套接口句柄进行修改，其他参数不改变
   void moveHandler(int oldSocketNum, int newSocketNum);
 
 private:
@@ -60,7 +69,7 @@ private:
   friend class HandlerIterator;
   HandlerDescriptor fHandlers;
 };
-
+/// 枚举器
 class HandlerIterator {
 public:
   HandlerIterator(HandlerSet& handlerSet);

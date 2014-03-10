@@ -92,7 +92,7 @@ int H264EncWrapper::Destroy()
     x264_picture_clean( &m_pic );
 
     // TODO: clean m_h
-    //x264_encoder_close  (m_h); //?????
+    //x264_encoder_close(m_h); //?????
     
    return 0;
 }

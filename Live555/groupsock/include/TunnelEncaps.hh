@@ -40,7 +40,7 @@ class TunnelEncapsulationTrailer {
         // (e.g., for 'source-specific multicast' preceding this)
         // bytes -4 through -1: auxilliary address
 
-    public:
+public:
 	Cookie& srcCookie()
 		{ return *(Cookie*)byteOffset(0); }
 	Cookie& dstCookie()
@@ -54,10 +54,10 @@ class TunnelEncapsulationTrailer {
 	u_int8_t& command()
 		{ return *(u_int8_t*)byteOffset(11); }
 
-        u_int32_t& auxAddress()
-                { return *(u_int32_t*)byteOffset(-4); }
+    u_int32_t& auxAddress()
+        { return *(u_int32_t*)byteOffset(-4); }
 
-    private:
+private:
 	inline char* byteOffset(int charIndex)
 		{ return ((char*)this) + charIndex; }
 };

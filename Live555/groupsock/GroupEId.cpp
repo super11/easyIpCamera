@@ -25,7 +25,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 void Scope::assign(u_int8_t ttl, const char* publicKey) {
   fTTL = ttl;
-
   fPublicKey = strDup(publicKey == NULL ? "nokey" : publicKey);
 }
 

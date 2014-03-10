@@ -34,8 +34,9 @@ class MatroskaDemux; // forward
 class MatroskaFile: public Medium {
 public:
   typedef void (onCreationFunc)(MatroskaFile* newFile, void* clientData);
-  static void createNew(UsageEnvironment& env, char const* fileName, onCreationFunc* onCreation, void* onCreationClientData,
-			char const* preferredLanguage = "eng");
+  static void createNew(UsageEnvironment& env, char const* fileName, 
+	  onCreationFunc* onCreation, void* onCreationClientData,
+	  char const* preferredLanguage = "eng");
     // Note: Unlike most "createNew()" functions, this one doesn't return a new object immediately.  Instead, because this class
     // requires file reading (to parse the Matroska 'Track' headers) before a new object can be initialized, the creation of a new
     // object is signalled by calling - from the event loop - an 'onCreationFunc' that is passed as a parameter to "createNew()".

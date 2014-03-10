@@ -77,24 +77,24 @@ public:
 
 class Groupsock: public OutputSocket {
 public:
-  Groupsock(UsageEnvironment& env, struct in_addr const& groupAddr,
-	    Port port, u_int8_t ttl);
-      // used for a 'source-independent multicast' group
-  Groupsock(UsageEnvironment& env, struct in_addr const& groupAddr,
-	    struct in_addr const& sourceFilterAddr,
-	    Port port);
+  Groupsock(UsageEnvironment& env, 
+	struct in_addr const& groupAddr, Port port, u_int8_t ttl);
+	// used for a 'source-independent multicast' group
+
+  Groupsock(UsageEnvironment& env, 
+	struct in_addr const& groupAddr, struct in_addr const& sourceFilterAddr, Port port);
       // used for a 'source-specific multicast' group
   virtual ~Groupsock();
 
-  void changeDestinationParameters(struct in_addr const& newDestAddr,
-				   Port newDestPort, int newDestTTL);
+  void changeDestinationParameters(
+	struct in_addr const& newDestAddr, Port newDestPort, int newDestTTL);
       // By default, the destination address, port and ttl for
       // outgoing packets are those that were specified in
       // the constructor.  This works OK for multicast sockets,
       // but for unicast we usually want the destination port
       // number, at least, to be different from the source port.
       // (If a parameter is 0 (or ~0 for ttl), then no change made.)
-
+	 
   // As a special case, we also allow multiple destinations (addresses & ports)
   // (This can be used to implement multi-unicast.)
   void addDestination(struct in_addr const& addr, Port const& port);
@@ -133,9 +133,8 @@ public:
   NetInterfaceTrafficStats statsGroupOutgoing; // *not* static
   NetInterfaceTrafficStats statsGroupRelayedIncoming; // *not* static
   NetInterfaceTrafficStats statsGroupRelayedOutgoing; // *not* static
-
-  Boolean wasLoopedBackFromUs(UsageEnvironment& env,
-			      struct sockaddr_in& fromAddress);
+  // 是否为本机发送的回环回来的包
+  Boolean wasLoopedBackFromUs(UsageEnvironment& env, struct sockaddr_in& fromAddress);
 
 public: // redefined virtual functions
   virtual Boolean handleRead(unsigned char* buffer, unsigned bufferMaxSize,

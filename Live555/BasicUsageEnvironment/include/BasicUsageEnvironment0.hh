@@ -66,7 +66,7 @@ private:
 };
 
 class HandlerSet; // forward
-
+/// 当前只支持32个时间，容易处理
 #define MAX_NUM_EVENT_TRIGGERS 32
 
 // An abstract base class, useful for subclassing
@@ -82,10 +82,14 @@ public:
 
 public:
   // Redefined virtual functions:
-  virtual TaskToken scheduleDelayedTask(int64_t microseconds, TaskFunc* proc,
-				void* clientData);
+  virtual TaskToken scheduleDelayedTask(int64_t microseconds, 
+	  TaskFunc* proc, void* clientData);
   virtual void unscheduleDelayedTask(TaskToken& prevTask);
 
+  /*
+  SingleStep循环
+  @param watchVariable 退出变量的指针，为true时则退出循环
+  */
   virtual void doEventLoop(char* watchVariable);
 
   virtual EventTriggerId createEventTrigger(TaskFunc* eventHandlerProc);

@@ -114,7 +114,7 @@ IPin* DSGraph::GetPin(IBaseFilter* filter, PIN_DIRECTION direction, int index)
     {
         return pin;
     }
-
+	// 枚举所有Pin
     while (true)
     {
         ULONG ulFound;
@@ -124,7 +124,7 @@ IPin* DSGraph::GetPin(IBaseFilter* filter, PIN_DIRECTION direction, int index)
         {
             break;
         }
-
+		// 判断方向属性
         PIN_DIRECTION pindir = (PIN_DIRECTION)3;
         tmp_pin->QueryDirection(&pindir);
         if (pindir == direction)

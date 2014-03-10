@@ -192,13 +192,13 @@ public:
 
   Boolean initiate(int useSpecialRTPoffset = -1);
       // Creates a "RTPSource" for this subsession. (Has no effect if it's
-      // already been created.)  Returns True iff this succeeds.
+      // already been created.)  Returns True if this succeeds.
   void deInitiate(); // Destroys any previously created RTPSource
   Boolean setClientPortNum(unsigned short portNum);
       // Sets the preferred client port number that any "RTPSource" for
       // this subsession would use.  (By default, the client port number
       // is gotten from the original SDP description, or - if the SDP
-      // description does not specfy a client port number - an ephemeral
+      // description does not specify a client port number - an ephemeral
       // (even) port number is chosen.)  This routine must *not* be
       // called after initiate().
   void receiveRawMP3ADUs() { fReceiveRawMP3ADUs = True; } // optional hack for audio/MPA-ROBUST; must not be called after Initiate()

@@ -39,9 +39,9 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 typedef u_int32_t netAddressBits;
 
 class NetAddress {
-    public:
+public:
 	NetAddress(u_int8_t const* data,
-		   unsigned length = 4 /* default: 32 bits */);
+		unsigned length = 4 /* default: 32 bits */);
 	NetAddress(unsigned length = 4); // sets address data to all-zeros
 	NetAddress(NetAddress const& orig);
 	NetAddress& operator=(NetAddress const& rightSide);
@@ -49,9 +49,9 @@ class NetAddress {
 
 	unsigned length() const { return fLength; }
 	u_int8_t const* data() const // always in network byte order
-		{ return fData; }
+	{ return fData; }
 
-    private:
+private:
 	void assign(u_int8_t const* data, unsigned length);
 	void clean();
 
@@ -60,7 +60,7 @@ class NetAddress {
 };
 
 class NetAddressList {
-    public:
+public:
 	NetAddressList(char const* hostname);
 	NetAddressList(NetAddressList const& orig);
 	NetAddressList& operator=(NetAddressList const& rightSide);
@@ -72,15 +72,15 @@ class NetAddressList {
 
 	// Used to iterate through the addresses in a list:
 	class Iterator {
-	    public:
+	public:
 		Iterator(NetAddressList const& addressList);
 		NetAddress const* nextAddress(); // NULL iff none
-	    private:
+	private:
 		NetAddressList const& fAddressList;
 		unsigned fNextIndex;
 	};
 
-    private:
+private:
 	void assign(netAddressBits numAddresses, NetAddress** addressArray);
 	void clean();
 
@@ -92,13 +92,13 @@ class NetAddressList {
 typedef u_int16_t portNumBits;
 
 class Port {
-    public:
+public:
 	Port(portNumBits num /* in host byte order */);
 
 	portNumBits num() const // in network byte order
-		{ return fPortNum; }
+	{ return fPortNum; }
 
-    private:
+private:
 	portNumBits fPortNum; // stored in network byte order
 #ifdef IRIX
 	portNumBits filler; // hack to overcome a bug in IRIX C++ compiler
@@ -110,32 +110,29 @@ UsageEnvironment& operator<<(UsageEnvironment& s, const Port& p);
 
 // A generic table for looking up objects by (address1, address2, port)
 class AddressPortLookupTable {
-    public:
+public:
 	AddressPortLookupTable();
 	virtual ~AddressPortLookupTable();
 
-	void* Add(netAddressBits address1, netAddressBits address2,
-		  Port port, void* value);
-		// Returns the old value if different, otherwise 0
-	Boolean Remove(netAddressBits address1, netAddressBits address2,
-		       Port port);
-	void* Lookup(netAddressBits address1, netAddressBits address2,
-		     Port port);
-		// Returns 0 if not found
+	void* Add(netAddressBits address1, netAddressBits address2, Port port, void* value);
+	// Returns the old value if different, otherwise 0
+	Boolean Remove(netAddressBits address1, netAddressBits address2, Port port);
+	void* Lookup(netAddressBits address1, netAddressBits address2, Port port);
+	// Returns 0 if not found
 
 	// Used to iterate through the entries in the table
 	class Iterator {
-	    public:
+	public:
 		Iterator(AddressPortLookupTable& table);
 		virtual ~Iterator();
 
 		void* next(); // NULL iff none
 
-	    private:
+	private:
 		HashTable::Iterator* fIter;
 	};
 
-    private:
+private:
 	friend class Iterator;
 	HashTable* fTable;
 };
@@ -147,19 +144,19 @@ Boolean IsMulticastAddress(netAddressBits address);
 // A mechanism for displaying an IPv4 address in ASCII.  This is intended to replace "inet_ntoa()", which is not thread-safe.
 class AddressString {
 public:
-  AddressString(struct sockaddr_in const& addr);
-  AddressString(struct in_addr const& addr);
-  AddressString(netAddressBits addr); // "addr" is assumed to be in host byte order here
+	AddressString(struct sockaddr_in const& addr);
+	AddressString(struct in_addr const& addr);
+	AddressString(netAddressBits addr); // "addr" is assumed to be in host byte order here
 
-  virtual ~AddressString();
+	virtual ~AddressString();
 
-  char const* val() const { return fVal; }
-
-private:
-  void init(netAddressBits addr); // used to implement each of the constructors
+	char const* val() const { return fVal; }
 
 private:
-  char* fVal; // The result ASCII string: allocated by the constructor; deleted by the destructor
+	void init(netAddressBits addr); // used to implement each of the constructors
+
+private:
+	char* fVal; // The result ASCII string: allocated by the constructor; deleted by the destructor
 };
 
 #endif

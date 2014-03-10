@@ -38,8 +38,7 @@ public:
   UserAuthenticationDatabase(char const* realm = NULL,
 			     Boolean passwordsAreMD5 = False);
     // If "passwordsAreMD5" is True, then each password stored into, or removed from,
-    // the database is actually the value computed
-    // by md5(<username>:<realm>:<actual-password>)
+    // the database is actually the value computed by md5(<username>:<realm>:<actual-password>)
   virtual ~UserAuthenticationDatabase();
 
   virtual void addUserRecord(char const* username, char const* password);
@@ -87,6 +86,7 @@ public:
   void removeServerMediaSession(char const* streamName);
      // ditto
 
+  // 以serverMediaSession为主查找RTSPClientSession，并删除他们
   void closeAllClientSessionsForServerMediaSession(ServerMediaSession* serverMediaSession);
       // Closes (from the server) all RTSP client sessions that are currently using this "ServerMediaSession" object.
       // Note, however, that the "ServerMediaSession" object remains accessible by new RTSP clients.
@@ -102,8 +102,7 @@ public:
 
   char* rtspURL(ServerMediaSession const* serverMediaSession, int clientSocket = -1) const;
       // returns a "rtsp://" URL that could be used to access the
-      // specified session (which must already have been added to
-      // us using "addServerMediaSession()".
+      // specified session (which must already have been added to us using "addServerMediaSession()".
       // This string is dynamically allocated; caller should delete[]
       // (If "clientSocket" is non-negative, then it is used (by calling "getsockname()") to determine
       //  the IP address to be used in the URL.)
@@ -130,7 +129,14 @@ protected:
       // called only by createNew();
   virtual ~RTSPServer();
 
+  /*
+  设置Tcp监听套接口
+  @param env 
+  @param ourPort 监听端口
+  @return int 成功则返回套接口
+  */
   static int setUpOurSocket(UsageEnvironment& env, Port& ourPort);
+  // Ip地址检查/过滤
   virtual Boolean specialClientAccessCheck(int clientSocket, struct sockaddr_in& clientAddr,
 					   char const* urlSuffix);
       // a hook that allows subclassed servers to do server-specific access checking
@@ -150,6 +156,7 @@ public: // should be protected, but some old compilers complain otherwise
   protected:
     friend class RTSPClientSession;
     // Make the handler functions for each command virtual, to allow subclasses to redefine them:
+	/// option返回允许哪些指令(Public:)
     virtual void handleCmd_OPTIONS();
     virtual void handleCmd_GET_PARAMETER(char const* fullRequestStr); // when operating on the entire server
     virtual void handleCmd_SET_PARAMETER(char const* fullRequestStr); // when operating on the entire server
@@ -161,24 +168,40 @@ public: // should be protected, but some old compilers complain otherwise
     virtual void handleCmd_sessionNotFound();
     virtual void handleCmd_unsupportedTransport();
     // Support for optional RTSP-over-HTTP tunneling:
-    virtual Boolean parseHTTPRequestString(char* resultCmdName, unsigned resultCmdNameMaxSize,
-					   char* urlSuffix, unsigned urlSuffixMaxSize,
-					   char* sessionCookie, unsigned sessionCookieMaxSize,
-					   char* acceptStr, unsigned acceptStrMaxSize);
+
+	/**
+	从请求缓冲区中取出各个值来.
+	*/
+    virtual Boolean parseHTTPRequestString(
+		char* resultCmdName, unsigned resultCmdNameMaxSize,
+		char* urlSuffix, unsigned urlSuffixMaxSize,
+		char* sessionCookie, unsigned sessionCookieMaxSize, // x-sessioncookie:
+		char* acceptStr, unsigned acceptStrMaxSize);
     virtual void handleHTTPCmd_notSupported();
     virtual void handleHTTPCmd_notFound();
     virtual void handleHTTPCmd_TunnelingGET(char const* sessionCookie);
+    /*
+    把自己废弃了，并把输入套接口注入到sessionCookie对应的连接中
+    @param sessionCookie 注入的目的套接口
+    @param extraData 剩余消息缓冲区
+    @param extraDataSize 剩余缓冲区大小
+    @return Boolean 成功则返回TRUE
+    */
     virtual Boolean handleHTTPCmd_TunnelingPOST(char const* sessionCookie, unsigned char const* extraData, unsigned extraDataSize);
     virtual void handleHTTPCmd_StreamingGET(char const* urlSuffix, char const* fullRequestStr);
   protected:
     UsageEnvironment& envir() { return fOurServer.envir(); }
     void resetRequestBuffer();
     void closeSockets();
-    static void incomingRequestHandler(void*, int /*mask*/);
+    
+	static void incomingRequestHandler(void*, int /*mask*/);
     void incomingRequestHandler1();
+
     static void handleAlternativeRequestByte(void*, u_int8_t requestByte);
     void handleAlternativeRequestByte1(u_int8_t requestByte);
+	// 收到数据包后统一调用此函数处理
     void handleRequestBytes(int newBytesRead);
+
     Boolean authenticationOK(char const* cmdName, char const* urlSuffix, char const* fullRequestStr);
     void changeClientInputSocket(int newSocketNum, unsigned char const* extraData, unsigned extraDataSize);
       // used to implement RTSP-over-HTTP tunneling
@@ -188,15 +211,23 @@ public: // should be protected, but some old compilers complain otherwise
   protected:
     RTSPServer& fOurServer;
     Boolean fIsActive;
+	// 接收和发送套接口，允许不一样？
     int fClientInputSocket, fClientOutputSocket;
+	// 客户地址
     struct sockaddr_in fClientAddr;
+	
+	// 请求缓冲区
     unsigned char fRequestBuffer[RTSP_BUFFER_SIZE];
+	// 已经接收的，还有剩余的
     unsigned fRequestBytesAlreadySeen, fRequestBufferBytesLeft;
+
     unsigned char* fLastCRLF;
+	// 响应缓冲区
     unsigned char fResponseBuffer[RTSP_BUFFER_SIZE];
     unsigned fRecursionCount;
     char const* fCurrentCSeq;
     Authenticator fCurrentAuthenticator; // used if access control is needed
+	// Http隧道连接的标识符(Key cookie名称)
     char* fOurSessionCookie; // used for optional RTSP-over-HTTP tunneling
     unsigned fBase64RemainderCount; // used for optional RTSP-over-HTTP tunneling (possible values: 0,1,2,3)
   };
@@ -236,11 +267,15 @@ public: // should be protected, but some old compilers complain otherwise
   protected:
     RTSPServer& fOurServer;
     u_int32_t fOurSessionId;
+	// 此会话服务的流
     ServerMediaSession* fOurServerMediaSession;
     Boolean fIsMulticast, fStreamAfterSETUP;
     unsigned char fTCPStreamIdCount; // used for (optional) RTP/TCP
     TaskToken fLivenessCheckTask;
+
+	// 子流个数
     unsigned fNumStreamStates;
+	// 子流数组
     struct streamState {
       ServerMediaSubsession* subsession;
       void* streamToken;
@@ -275,22 +310,29 @@ private:
 
   static void incomingConnectionHandlerHTTP(void*, int /*mask*/);
   void incomingConnectionHandlerHTTP1();
-
+  /*
+  Http和RTSP的连接最终都由此函数来处理
+  @param serverSocket 对应监听套接口(Http或RTSP)
+  */
   void incomingConnectionHandler(int serverSocket);
 
 private:
   friend class RTSPClientConnection;
   friend class RTSPClientSession;
   friend class ServerMediaSessionIterator;
+  // RTSP 554 套接口
   int fRTSPServerSocket;
   Port fRTSPServerPort;
+  // Http隧道套接口(可无)
   int fHTTPServerSocket; // for optional RTSP-over-HTTP tunneling
   Port fHTTPServerPort; // ditto
+
   HashTable* fServerMediaSessions; // maps 'stream name' strings to "ServerMediaSession" objects
   HashTable* fClientConnections; // the "ClientConnection" objects that we're using
   HashTable* fClientConnectionsForHTTPTunneling; // maps client-supplied 'session cookie' strings to "RTSPClientConnection"s
     // (used only for optional RTSP-over-HTTP tunneling)
   HashTable* fClientSessions; // maps 'session id' strings to "RTSPClientSession" objects
+  // 用户验证字典
   UserAuthenticationDatabase* fAuthDB;
   unsigned fReclamationTestSeconds;
 };

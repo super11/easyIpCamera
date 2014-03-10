@@ -149,14 +149,20 @@ private:
   friend class DelayQueue;
   DelayQueueEntry* fNext;
   DelayQueueEntry* fPrev;
+  /// 剩下的过期时间(之后多久过期)
   DelayInterval fDeltaTimeRemaining;
-
+  /// 为本项分配的token
   intptr_t fToken;
+  /// token 分配器
   static intptr_t tokenCounter;
 };
 
 ///// DelayQueue /////
-
+/**
+超时缓存队列，是个按触发时间排序的列表，每一项保存与前项的时间差，
+最后一项的过期时间为无限长，在构造时插入
+过期列表项的fDeltaTimeRemaining=DELAY_ZERO
+*/
 class DelayQueue: public DelayQueueEntry {
 public:
   DelayQueue();
@@ -167,15 +173,20 @@ public:
   void updateEntry(intptr_t tokenToFind, DelayInterval newDelay);
   void removeEntry(DelayQueueEntry* entry); // but doesn't delete it
   DelayQueueEntry* removeEntry(intptr_t tokenToFind); // but doesn't delete it
-
+  /// 返回下一个触发时刻
   DelayInterval const& timeToNextAlarm();
+  /* 
+  处理一个过期事件.
+  调用DelayQueueEntry::handleTimeout()
+  */
   void handleAlarm();
 
 private:
   DelayQueueEntry* head() { return fNext; }
   DelayQueueEntry* findEntryByToken(intptr_t token);
+  // 同步时间差，把过期的列表项的fDeltaTimeRemaining都设成DELAY_ZERO,并更新fLastSyncTime
   void synchronize(); // bring the 'time remaining' fields up-to-date
-
+  // 上次同步时间
   EventTime fLastSyncTime;
 };
 

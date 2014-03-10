@@ -498,7 +498,8 @@ char* MediaSession::absStartTime() const {
   MediaSubsessionIterator iter(*this);
   MediaSubsession* subsession;
   while ((subsession = iter.next()) != NULL) {
-    if (subsession->_absStartTime() != NULL) return subsession->_absStartTime();
+    if (subsession->_absStartTime() != NULL) 
+		return subsession->_absStartTime();
   }
   return NULL;
 }
@@ -510,7 +511,8 @@ char* MediaSession::absEndTime() const {
   MediaSubsessionIterator iter(*this);
   MediaSubsession* subsession;
   while ((subsession = iter.next()) != NULL) {
-    if (subsession->_absEndTime() != NULL) return subsession->_absEndTime();
+    if (subsession->_absEndTime() != NULL) 
+		return subsession->_absEndTime();
   }
   return NULL;
 }

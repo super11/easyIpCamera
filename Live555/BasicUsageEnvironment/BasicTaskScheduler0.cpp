@@ -44,7 +44,9 @@ private:
 ////////// BasicTaskScheduler0 //////////
 
 BasicTaskScheduler0::BasicTaskScheduler0()
-  : fLastHandledSocketNum(-1), fTriggersAwaitingHandling(0), fLastUsedTriggerMask(1), fLastUsedTriggerNum(MAX_NUM_EVENT_TRIGGERS-1) {
+  : fLastHandledSocketNum(-1), fTriggersAwaitingHandling(0), 
+  fLastUsedTriggerMask(1), fLastUsedTriggerNum(MAX_NUM_EVENT_TRIGGERS-1) 
+{
   fHandlers = new HandlerSet;
   for (unsigned i = 0; i < MAX_NUM_EVENT_TRIGGERS; ++i) {
     fTriggeredEventHandlers[i] = NULL;

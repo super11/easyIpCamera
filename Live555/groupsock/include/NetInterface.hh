@@ -41,14 +41,14 @@ public:
   virtual ~DirectedNetInterface();
 
   virtual Boolean write(unsigned char* data, unsigned numBytes) = 0;
-
-  virtual Boolean SourceAddrOKForRelaying(UsageEnvironment& env,
-					  unsigned addr) = 0;
+  /// 是否允许转发
+  virtual Boolean SourceAddrOKForRelaying(UsageEnvironment& env, unsigned addr) = 0;
 
 protected:
   DirectedNetInterface(); // virtual base class
 };
 
+// DirectedNetInterface HashTable
 class DirectedNetInterfaceSet {
 public:
   DirectedNetInterfaceSet();
@@ -74,6 +74,7 @@ public:
 
 private:
   friend class Iterator;
+  // DirectedNetInterface -> DirectedNetInterface 的HashTable
   HashTable* fTable;
 };
 
@@ -82,7 +83,7 @@ public:
   virtual ~Socket();
 
   virtual Boolean handleRead(unsigned char* buffer, unsigned bufferMaxSize,
-			     unsigned& bytesRead,
+			     unsigned& bytesRead, 
 			     struct sockaddr_in& fromAddress) = 0;
       // Returns False on error; resultData == NULL if data ignored
 

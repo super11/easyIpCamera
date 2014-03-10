@@ -52,12 +52,13 @@ public:
   static Boolean lookupByName(UsageEnvironment& env,
 			      char const* mediumName,
 			      Medium*& resultMedium);
+  /// 删除env.liveMediaPriv上Medium的引用
   static void close(UsageEnvironment& env, char const* mediumName);
   static void close(Medium* medium); // alternative close() method using ptrs
       // (has no effect if medium == NULL)
 
   UsageEnvironment& envir() const {return fEnviron;}
-
+  // 名称
   char const* name() const {return fMediumName;}
 
   // Test for specific types of media:
@@ -81,7 +82,9 @@ protected:
 
 private:
   UsageEnvironment& fEnviron;
+  // 媒体名称
   char fMediumName[mediumNameMaxLen];
+  // 定时任务
   TaskToken fNextTask;
 };
 
@@ -107,6 +110,11 @@ private:
   void addNew(Medium* medium, char* mediumName);
   void remove(char const* name);
 
+  /*
+  根据fNameGenerator生成一个名字
+  @param mediumName [out] 媒体名称
+  @param maxLen 最大长度
+  */
   void generateNewName(char* mediumName, unsigned maxLen);
 
 private:
