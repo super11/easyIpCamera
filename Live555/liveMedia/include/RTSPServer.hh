@@ -273,12 +273,12 @@ public: // should be protected, but some old compilers complain otherwise
     unsigned char fTCPStreamIdCount; // used for (optional) RTP/TCP
     TaskToken fLivenessCheckTask;
 
-	// 子流个数
+	// 发送的子流个数
     unsigned fNumStreamStates;
 	// 子流数组
     struct streamState {
-      ServerMediaSubsession* subsession;
-      void* streamToken;
+      ServerMediaSubsession* subsession; // 原始子流引用(静态的)
+      void* streamToken; // 类SteamState的实例(实际发送的动态内容)
     } * fStreamStates;
   };
 

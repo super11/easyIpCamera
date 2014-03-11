@@ -92,7 +92,7 @@ void OnDemandServerMediaSubsession
 
   if (fLastStreamToken != NULL && fReuseFirstSource) {
     // Special case: Rather than creating a new 'StreamState',
-    // we reuse the one that we've already created:
+    // we reuse the one that we've already created: 重用上次的StreamState
     serverRTPPort = ((StreamState*)fLastStreamToken)->serverRTPPort();
     serverRTCPPort = ((StreamState*)fLastStreamToken)->serverRTCPPort();
     ++((StreamState*)fLastStreamToken)->referenceCount();
@@ -100,8 +100,7 @@ void OnDemandServerMediaSubsession
   } else {
     // Normal case: Create a new media source:
     unsigned streamBitrate;
-    FramedSource* mediaSource
-      = createNewStreamSource(clientSessionId, streamBitrate);
+    FramedSource* mediaSource = createNewStreamSource(clientSessionId, streamBitrate);
 
     // Create 'groupsock' and 'sink' objects for the destination,
     // using previously unused server port numbers:
@@ -110,15 +109,15 @@ void OnDemandServerMediaSubsession
     Groupsock* rtpGroupsock;
     Groupsock* rtcpGroupsock;
     portNumBits serverPortNum;
-    if (clientRTCPPort.num() == 0) {
+    if (clientRTCPPort.num() == 0) { // 如果客户端不使用RTCP,则我们也不创建RTCP端口
       // We're streaming raw UDP (not RTP). Create a single groupsock:
       NoReuse dummy(envir()); // ensures that we skip over ports that are already in use
       for (serverPortNum = fInitialPortNum; ; ++serverPortNum) {
-	struct in_addr dummyAddr; dummyAddr.s_addr = 0;
+		struct in_addr dummyAddr; dummyAddr.s_addr = 0;
 
-	serverRTPPort = serverPortNum;
-	rtpGroupsock = new Groupsock(envir(), dummyAddr, serverRTPPort, 255);
-	if (rtpGroupsock->socketNum() >= 0) break; // success
+		serverRTPPort = serverPortNum;
+		rtpGroupsock = new Groupsock(envir(), dummyAddr, serverRTPPort, 255);
+		if (rtpGroupsock->socketNum() >= 0) break; // success
       }
 
       rtcpGroupsock = NULL;
@@ -129,24 +128,24 @@ void OnDemandServerMediaSubsession
       // groupsocks (RTP and RTCP), with adjacent port numbers (RTP port number even):
       NoReuse dummy(envir()); // ensures that we skip over ports that are already in use
       for (portNumBits serverPortNum = fInitialPortNum; ; serverPortNum += 2) {
-	struct in_addr dummyAddr; dummyAddr.s_addr = 0;
+		struct in_addr dummyAddr; dummyAddr.s_addr = 0;
 
-	serverRTPPort = serverPortNum;
-	rtpGroupsock = new Groupsock(envir(), dummyAddr, serverRTPPort, 255);
-	if (rtpGroupsock->socketNum() < 0) {
-	  delete rtpGroupsock;
-	  continue; // try again
-	}
+		serverRTPPort = serverPortNum;
+		rtpGroupsock = new Groupsock(envir(), dummyAddr, serverRTPPort, 255);
+		if (rtpGroupsock->socketNum() < 0) {
+		  delete rtpGroupsock;
+		  continue; // try again
+		}
 
-	serverRTCPPort = serverPortNum+1;
-	rtcpGroupsock = new Groupsock(envir(), dummyAddr, serverRTCPPort, 255);
-	if (rtcpGroupsock->socketNum() < 0) {
-	  delete rtpGroupsock;
-	  delete rtcpGroupsock;
-	  continue; // try again
-	}
+		serverRTCPPort = serverPortNum+1;
+		rtcpGroupsock = new Groupsock(envir(), dummyAddr, serverRTCPPort, 255);
+		if (rtcpGroupsock->socketNum() < 0) {
+		  delete rtpGroupsock;
+		  delete rtcpGroupsock;
+		  continue; // try again
+		}
 
-	break; // success
+		break; // success
       }
 
       unsigned char rtpPayloadType = 96 + trackNumber()-1; // if dynamic
@@ -391,8 +390,7 @@ StreamState::~StreamState() {
   reclaim();
 }
 
-void StreamState
-::startPlaying(Destinations* dests,
+void StreamState::startPlaying(Destinations* dests,
 	       TaskFunc* rtcpRRHandler, void* rtcpRRHandlerClientData,
 	       ServerRequestAlternativeByteHandler* serverRequestAlternativeByteHandler,
 	       void* serverRequestAlternativeByteHandlerClientData) {
@@ -400,8 +398,7 @@ void StreamState
 
   if (fRTCPInstance == NULL && fRTPSink != NULL) {
     // Create (and start) a 'RTCP instance' for this RTP sink:
-    fRTCPInstance
-      = RTCPInstance::createNew(fRTPSink->envir(), fRTCPgs,
+    fRTCPInstance = RTCPInstance::createNew(fRTPSink->envir(), fRTCPgs,
 				fTotalBW, (unsigned char*)fMaster.fCNAME,
 				fRTPSink, NULL /* we're a server */);
         // Note: This starts RTCP running automatically

@@ -273,8 +273,7 @@ void AVIFileSink::onRTCPBye(void* clientData) {
 
   struct timeval timeNow;
   gettimeofday(&timeNow, NULL);
-  unsigned secsDiff
-    = timeNow.tv_sec - ioState->fOurSink.fStartTime.tv_sec;
+  unsigned secsDiff = timeNow.tv_sec - ioState->fOurSink.fStartTime.tv_sec;
 
   MediaSubsession& subsession = ioState->fOurSubsession;
   ioState->envir() << "Received RTCP \"BYE\" on \""

@@ -40,7 +40,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 class ServerMediaSubsession; // forward
 /**
 媒体描述类，主要属性有描述SDP和引用计数.
-并包含ServerMediaSubsession的列表
+类似文件容器并包含ServerMediaSubsession的列表
 */
 class ServerMediaSession: public Medium {
 public:
@@ -120,7 +120,9 @@ private:
 };
 
 /**
-负责实际拖动和开启停止处理.
+描述文件的各个静态流，
+注意此类仍然是静态的，streamToken才负责与某个客户端的文件传输
+负责streamToken实际拖动和开启停止处理.
 */
 class ServerMediaSubsession: public Medium {
 public:
@@ -143,7 +145,8 @@ public:
 				   Port& serverRTCPPort, // out
 				   void*& streamToken // out
 				   ) = 0;
-  virtual void startStream(unsigned clientSessionId, void* streamToken,
+  virtual void startStream(unsigned clientSessionId, 
+			   void* streamToken, ///< 此参数代表实际的传输
 			   TaskFunc* rtcpRRHandler,
 			   void* rtcpRRHandlerClientData,
 			   unsigned short& rtpSeqNum,

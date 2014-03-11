@@ -134,7 +134,13 @@ public:
   int tcpSocketNum;
   unsigned char rtpChannelId, rtcpChannelId;
 };
-
+/**
+StreamState代表一个真正流动起来的数据流。这个数据流是从源流到 Sink。
+客户端与服务端的一个 rtp 会话中，有两个数据流，
+服务端是从 XXXFileSouce 流到 RTPSink，
+而客户端则是从 RTPSource 流到 XXXFileSink 。
+建立数据流的过程就是把 Source 与 Sink 连接起来。
+*/
 class StreamState {
 public:
   StreamState(OnDemandServerMediaSubsession& master,
@@ -156,11 +162,11 @@ public:
 
   Port const& serverRTPPort() const { return fServerRTPPort; }
   Port const& serverRTCPPort() const { return fServerRTCPPort; }
-
-  RTPSink* rtpSink() const { return fRTPSink; }
-
+  // 持续时间
   float streamDuration() const { return fStreamDuration; }
-
+  // 目的
+  RTPSink* rtpSink() const { return fRTPSink; }
+  // 源
   FramedSource* mediaSource() const { return fMediaSource; }
 
 private:
